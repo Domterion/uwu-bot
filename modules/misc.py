@@ -143,7 +143,7 @@ Memory {round(memory_usage, 2)}MiB, CPU {cpu_usage/cpu_count}%
 [Donate](https://www.patreon.com/mellOwO)
 [Vote](https://discordbots.org/bot/508725128427995136/vote)
 [Website](https://uwu-bot.xyz/)
-[Referral](https://m.do.co/c/e9f223fd5a5c)
+[DigitalOcean Referral](https://m.do.co/c/e9f223fd5a5c)
 """,
             inline=False
         )
