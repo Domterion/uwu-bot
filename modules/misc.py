@@ -116,30 +116,36 @@ class misc(commands.Cog):
         embed = discord.Embed(color=0x7289DA)
         embed.set_author(name="Bot Stats")
         embed.add_field(
-            name="Owner", value=f"<@300088143422685185> (mellowmarshe#0001)"
+            name="Info", value=
+f"""
+<@300088143422685185> (mellowmarshe#0001)
+[discord.py](https://github.com/Rapptz/discord.py)
+Python {version.major}.{version.minor}.{version.micro}
+Uptime: {days}d {hours}h {minutes}m, Servers: {len(self.bot.guilds)}
+"""
         )
         embed.add_field(
-            name="Library",
-            value=f"[discord.py\\[rewrite\\]](https://github.com/Rapptz/discord.py/tree/rewrite)",
-        )
-        embed.add_field(
-            name="Language",
-            value=f"Python {version.major}.{version.minor}.{version.micro}",
-        )
-        embed.add_field(name="Uptime", value=f"{days}d {hours}h {minutes}m")
-        embed.add_field(name="Servers", value=len(self.bot.guilds))
-        embed.add_field(
-            name="Process",
-            value=f"Memory {round(memory_usage, 2)}MiB\nCPU {cpu_usage/cpu_count}%",
-        )
-        embed.add_field(
-            name="Bot Usage",
-            value=f"{self.bot.commands_ran} commands used since boot\n{cmds_used + self.bot.commands_ran} commands used\n{uwulonian} uwulonians",
+            name="Host and Usage",
+            value=
+f"""
+Memory {round(memory_usage, 2)}MiB, CPU {cpu_usage/cpu_count}%
+{self.bot.commands_ran} commands used since boot, {cmds_used + self.bot.commands_ran} commands used, Users {user_count}
+{uwulonian} uwulonians
+""",
         )
         embed.add_field(name="Members", value=f"{user_count}")
         embed.add_field(
             name="Links",
-            value="[Invite](https://discordapp.com/oauth2/authorize?client_id=508725128427995136&scope=bot&permissions=67501248) | [Support](https://discord.gg/733URZq) | [Donate](https://www.patreon.com/mellOwO) | [Vote](https://discordbots.org/bot/508725128427995136/vote) | [Website](https://uwu-bot.xyz/)",
+            value=
+"""
+[Invite](https://discordapp.com/oauth2/authorize?client_id=508725128427995136&scope=bot&permissions=67501248)
+[Support](https://discord.gg/733URZq)
+[Donate](https://www.patreon.com/mellOwO)
+[Vote](https://discordbots.org/bot/508725128427995136/vote)
+[Website](https://uwu-bot.xyz/)
+[Referral](https://m.do.co/c/e9f223fd5a5c)
+""",
+            inline=False
         )
         await ctx.send(embed=embed)
 
