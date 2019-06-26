@@ -81,8 +81,7 @@ class marriage(commands.Cog):
     async def divorce(self, ctx):
         async with self.bot.pool.acquire() as conn:
             uwulonian = await conn.fetchrow(
-                "SELECT married_to FROM user_stats WHERE user_id = $1",
-                ctx.author.id,
+                "SELECT married_to FROM user_stats WHERE user_id = $1", ctx.author.id
             )
             if not uwulonian["married_to"]:
                 return await ctx.caution("You aren't married...")

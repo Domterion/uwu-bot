@@ -45,6 +45,7 @@ else:
 
 description = """uwu. A RPG bot made by mellowmarshe#0001"""
 
+
 class uwu(commands.Bot):
     def __init__(self):
         super().__init__(
@@ -125,7 +126,6 @@ class uwu(commands.Bot):
 
             await self.process_commands(message)
 
-
     async def init_conns(self):
         await self.init_dbs()
 
@@ -139,7 +139,7 @@ class uwu(commands.Bot):
             "database": self.config.postgres["name"],
             "host": "127.0.0.1",
         }
-        self.pool = await asyncpg.create_pool(**credentials, max_size=150)    
+        self.pool = await asyncpg.create_pool(**credentials, max_size=150)
 
     async def on_ready(self):
         await self.init_conns()

@@ -41,5 +41,6 @@ class patron(commands.Cog):
             f"""You have been a Patron since {patron['patron_time'].strftime("%x at %X")}. Thanks for supporting me!"""
         )
 
+
 def setup(bot):
     bot.add_cog(patron(bot))

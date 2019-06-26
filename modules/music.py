@@ -32,7 +32,7 @@ caution = "<:caution:521002590566219776>"
 class music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        if not hasattr(bot, 'lavalink'):
+        if not hasattr(bot, "lavalink"):
             bot.lavalink = lavalink.Client(508725128427995136)
             bot.lavalink.add_node(
                 bot.config.lavalink["ip"],

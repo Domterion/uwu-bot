@@ -215,5 +215,6 @@ xp {rows['xp'] + xp} (Hint: You need {(rows['level'] + 1) * 1500} xp and {(rows[
                 f"Your uwulonian is now adventuring! It will return in 1 hour"
             )
 
+
 def setup(bot):
     bot.add_cog(exploring(bot))

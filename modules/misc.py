@@ -32,10 +32,11 @@ class misc(commands.Cog):
     @commands.command(description="Claim your daily uwus.", aliases=["daily"])
     async def dailies(self, ctx):
         streak = await self.bot.redis.execute(
-            "INCR",
-            f"{ctx.author.id}-{ctx.command.qualified_name}-streak",
+            "INCR", f"{ctx.author.id}-{ctx.command.qualified_name}-streak"
         )
-        await self.bot.redis.execute("EXPIRE", f"{ctx.author.id}-{ctx.command.qualified_name}-streak", 108000)
+        await self.bot.redis.execute(
+            "EXPIRE", f"{ctx.author.id}-{ctx.command.qualified_name}-streak", 108000
+        )
         daily = min(30 * streak, 210)
         xp_bonus = 0
         if streak >= 8:
@@ -43,9 +44,13 @@ class misc(commands.Cog):
 
         await self.bot.pool.execute(
             "UPDATE user_stats SET uwus = user_stats.uwus + $1, xp = user_stats.xp + $2 WHERE user_id = $3",
-            daily, xp_bonus, ctx.author.id,
+            daily,
+            xp_bonus,
+            ctx.author.id,
         )
-        await ctx.send(f"You get {daily} uwus for a streak of {streak}, 8+ day streak xp bonus: {xp_bonus}.")
+        await ctx.send(
+            f"You get {daily} uwus for a streak of {streak}, 8+ day streak xp bonus: {xp_bonus}."
+        )
 
     @commands.command(
         description="Give someone a slap", brief="Slap", usage="slap [user]"
@@ -116,18 +121,17 @@ class misc(commands.Cog):
         embed = discord.Embed(color=0x7289DA)
         embed.set_author(name="Bot Stats")
         embed.add_field(
-            name="Info", value=
-f"""
+            name="Info",
+            value=f"""
 <@300088143422685185> (mellowmarshe#0001)
 [discord.py](https://github.com/Rapptz/discord.py)
 Python {version.major}.{version.minor}.{version.micro}
 Uptime: {days}d {hours}h {minutes}m, Servers: {len(self.bot.guilds)}
-"""
+""",
         )
         embed.add_field(
             name="Host and Usage",
-            value=
-f"""
+            value=f"""
 Memory {round(memory_usage, 2)}MiB, CPU {cpu_usage/cpu_count}%
 {self.bot.commands_ran} commands used since boot, {cmds_used + self.bot.commands_ran} commands used, Users {user_count}
 {uwulonian} uwulonians
@@ -136,8 +140,7 @@ Memory {round(memory_usage, 2)}MiB, CPU {cpu_usage/cpu_count}%
         embed.add_field(name="Members", value=f"{user_count}")
         embed.add_field(
             name="Links",
-            value=
-"""
+            value="""
 [Invite](https://discordapp.com/oauth2/authorize?client_id=508725128427995136&scope=bot&permissions=67501248)
 [Support](https://discord.gg/733URZq)
 [Donate](https://www.patreon.com/mellOwO)
@@ -145,7 +148,7 @@ Memory {round(memory_usage, 2)}MiB, CPU {cpu_usage/cpu_count}%
 [Website](https://uwu-bot.xyz/)
 [DigitalOcean Referral](https://m.do.co/c/e9f223fd5a5c)
 """,
-            inline=False
+            inline=False,
         )
         await ctx.send(embed=embed)
 

@@ -7,7 +7,9 @@ caution = "<:caution:521002590566219776>"
 
 def on_cooldown(cooldown):
     async def predicate(ctx):
-        user_cooldown = await ctx.bot.redis.pttl(f"{ctx.author.id}-{ctx.command.qualified_name}")
+        user_cooldown = await ctx.bot.redis.pttl(
+            f"{ctx.author.id}-{ctx.command.qualified_name}"
+        )
         if user_cooldown == -2:
             await ctx.bot.redis.execute(
                 "SET",
@@ -15,7 +17,7 @@ def on_cooldown(cooldown):
                 "cooldown",
                 "EX",
                 cooldown,
-            )   
+            )
             return True
 
         raise commands.CommandOnCooldown(
