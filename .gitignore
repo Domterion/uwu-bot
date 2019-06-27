@@ -1,6 +1,7 @@
 ### Configs ###
 *.json
 config.py
+requirements.txt
 *.yml
 logs/
 discord.log
