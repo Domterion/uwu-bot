@@ -21,16 +21,9 @@ from typing import Union
 class staff(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.staff_ids = [
-            300_088_143_422_685_185,
-            422_181_415_598_161_921,
-            428_888_500_964_687_873,
-            311_553_339_261_321_216,
-            440_113_725_970_710_528,
-        ]
 
     async def cog_check(self, ctx):
-        if ctx.author.id in self.staff_ids:
+        if ctx.author.id in self.bot.config.bot_staff:
             return True
 
         raise (errorhandler.IsStaff(ctx))
@@ -41,7 +34,9 @@ class staff(commands.Cog):
         if reason is None:
             reason = "No reason"
         if len(reason) > 512:
-            return await ctx.send("Reason can't be more then 512 characters.")
+            return await ctx.caution("Reason can't be more then 512 characters.")
+        if user_id in self.bot.config.bot_staff:
+            return await ctx.caution("You can't blacklist staff.")
 
         try:
             await self.bot.pool.execute(
@@ -51,7 +46,7 @@ class staff(commands.Cog):
                 ctx.author.id,
             )
             self.bot.blacklisted.append(user_id)
-            return await ctx.send(f"Done. Blacklisted {user.name} for {reason}")
+            return await ctx.check()
         except asyncpg.UniqueViolationError:
             return await ctx.send("Error. User already blacklisted.", delete_after=30)
 
@@ -64,7 +59,7 @@ class staff(commands.Cog):
                 "DELETE FROM blacklists WHERE user_id = $1", user_id
             )
             self.bot.blacklisted.remove(user_id)
-            return await ctx.send("Done")
+            return await ctx.check()
         except:
             await ctx.send("User not blacklisted.", delete_after=30)
 
@@ -96,7 +91,7 @@ Thanks for your **{tier}** patronage! Enjoy your patron only commands!
 *Have recommendations? DM mellowmarshe#0001 or join the support server (https://uwu-bot.xyz/discord)*
 """
             )
-            return await ctx.send("Done")
+            return await ctx.check()
         except asyncpg.UniqueViolationError:
             return await ctx.send("User already a patron.", delete_after=30)
 
@@ -109,7 +104,7 @@ Thanks for your **{tier}** patronage! Enjoy your patron only commands!
             return await ctx.send(f"{user} is not a Patron.")
 
         await self.bot.pool.execute("DELETE FROM p_users WHERE user_id = $1", user_id)
-        await ctx.send("Done")
+        await ctx.check()
 
     @commands.group(invoke_without_command=True)
     async def uwulonian(self, ctx):

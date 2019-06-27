@@ -63,7 +63,7 @@ class uwulonian(commands.Cog):
 
             start = time.perf_counter()
             async with self.bot.session.get(
-                user.avatar_url_as(format="png"), raise_for_status=True
+                str(user.avatar_url_as(format="png")), raise_for_status=True
             ) as r:
                 author_avy = Image.open(BytesIO(await r.read()))
             async with ctx.typing():
@@ -99,7 +99,7 @@ class uwulonian(commands.Cog):
             color,
             ctx.author.id,
         )
-        await ctx.send(f"Set your profile color to {color}")
+        await ctx.check()
 
     @color.command()
     async def list(self, ctx):

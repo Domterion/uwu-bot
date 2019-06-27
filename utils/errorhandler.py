@@ -10,6 +10,15 @@ def on_cooldown(cooldown):
         user_cooldown = await ctx.bot.redis.pttl(
             f"{ctx.author.id}-{ctx.command.qualified_name}"
         )
+        if user_cooldown == 0:
+            ttl = await ctx.bot.redis.pttl(f"{ctx.author.id}-vote") / 1000
+            await self.bot.redis.execute(
+                "SET",
+                f"{ctx.author.id}-{ctx.command.qualified_name}",
+                "cooldown",
+                "EX",
+                int(ttl),
+            )
         if user_cooldown == -2:
             await ctx.bot.redis.execute(
                 "SET",

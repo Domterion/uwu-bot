@@ -11,3 +11,9 @@ class Context(commands.Context):
     async def caution(self, error):
         new_error = f"{caution_emote} {error}"
         await self.send(new_error, delete_after=30)
+
+    async def check(self):
+        await self.message.add_reaction(self.bot.config.check_emoji)
+
+    async def deny(self):
+        await self.message.add_reaction(self.bot.config.deny_emoji)

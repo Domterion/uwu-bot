@@ -28,7 +28,7 @@ class owner(commands.Cog):
             self.bot.commands_ran,
         )
         self.bot.logger.info("[Logout] Logging out...")
-        await ctx.send("Bye cruel world...")
+        await ctx.check()
         await self.bot.logout()
 
 

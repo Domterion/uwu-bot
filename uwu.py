@@ -60,7 +60,7 @@ class uwu(commands.Bot):
         self.config = config
         self.pool = None  # pool is unset till the bot is ready
         self.lavalink = None
-        self.session = aiohttp.ClientSession(loop=self.loop)
+        self.session = None
         self.process = psutil.Process(os.getpid())
         self.loop = asyncio.get_event_loop()
         self.logger = logging.getLogger("bot")
@@ -92,12 +92,38 @@ class uwu(commands.Bot):
             return True
 
     async def start(self):
+        self.session = aiohttp.ClientSession(loop=self.loop)
         for ext in self.config.startup_extensions:
             try:
                 self.load_extension(ext)
             except BaseException as e:
                 print(f"Failed to load {ext}\n{type(e).__name__}: {e}")
         await super().start(self.config.token)
+
+    async def on_ready(self):
+        await self.init_conns()
+        self.loop.create_task(self.update_gc())
+        with open("utils/schema.sql") as f:
+            await self.pool.execute(f.read())
+
+        bl_users = await self.pool.fetch("SELECT * FROM blacklists")
+        patrons = await self.pool.fetch("SELECT * FROM p_users")
+        prefixes = await self.pool.fetch("SELECT guild_id, prefix FROM guild_prefixes")
+
+        for i in prefixes:
+            self.prefixes[i[0]] = i[1]
+        for i in range(len(bl_users)):
+            self.blacklisted.append(int(bl_users[i]["user_id"]))
+        self.logger.info(f"[Start] Added {len(bl_users)} blacklisted users.")
+        for i in range(len(patrons)):
+            self.patrons.append(int(patrons[i]["user_id"]))
+        self.logger.info(f"[Start] Added {len(patrons)} patrons.")
+
+        game = discord.Game(self.config.playing_status)
+        await self.change_presence(status=discord.Status.dnd, activity=game)
+        self.logger.info(
+            f"[Start] Bot started with {len(self.guilds)} guilds and {len(self.users)} users."
+        )
 
     async def on_message_edit(self, before, after):
         if after.author.bot:
@@ -125,45 +151,6 @@ class uwu(commands.Bot):
                 )
 
             await self.process_commands(message)
-
-    async def init_conns(self):
-        await self.init_dbs()
-
-    async def init_dbs(self):
-        self.redis = await aioredis.create_redis_pool(
-            "redis://localhost", password=self.config.redispassword, loop=self.loop
-        )
-        credentials = {
-            "user": self.config.postgres["user"],
-            "password": self.config.postgres["password"],
-            "database": self.config.postgres["name"],
-            "host": "127.0.0.1",
-        }
-        self.pool = await asyncpg.create_pool(**credentials, max_size=150)
-
-    async def on_ready(self):
-        await self.init_conns()
-        with open("utils/schema.sql") as f:
-            await self.pool.execute(f.read())
-
-        bl_users = await self.pool.fetch("SELECT * FROM blacklists")
-        patrons = await self.pool.fetch("SELECT * FROM p_users")
-        prefixes = await self.pool.fetch("SELECT guild_id, prefix FROM guild_prefixes")
-
-        for i in prefixes:
-            self.prefixes[i[0]] = i[1]
-        for i in range(len(bl_users)):
-            self.blacklisted.append(int(bl_users[i]["user_id"]))
-        self.logger.info(f"[Start] Added {len(bl_users)} blacklisted users.")
-        for i in range(len(patrons)):
-            self.patrons.append(int(patrons[i]["user_id"]))
-        self.logger.info(f"[Start] Added {len(patrons)} patrons.")
-
-        game = discord.Game(self.config.playing_status)
-        await self.change_presence(status=discord.Status.dnd, activity=game)
-        self.logger.info(
-            f"[Start] Bot started with {len(self.guilds)} guilds and {len(self.users)} users."
-        )
 
     async def on_command_completion(self, ctx):
         self.commands_ran += 1
@@ -209,6 +196,27 @@ class uwu(commands.Bot):
         self.logger.info(
             f"[Guild] Joined guild {guild.name}({guild.id}) with {len(guild.members)} members"
         )
+
+    async def init_conns(self):
+        await self.init_dbs()
+
+    async def init_dbs(self):
+        self.redis = await aioredis.create_redis_pool(
+            "redis://localhost", password=self.config.redispassword, loop=self.loop
+        )
+        self.pool = await asyncpg.create_pool(**self.config.postgres, max_size=150)
+
+    async def update_gc(self):
+        await self.wait_until_ready()
+        while not self.is_closed():
+            auth = {"Authorization": self.config.dbl_token}
+            server_count = {"server_count": len(self.guilds)}
+            await self.session.post(
+                f"https://discordbots.org/api/bots/{self.user.id}/stats",
+                data=server_count,
+                headers=auth,
+            )
+            await asyncio.sleep(86400)
 
 
 if __name__ == "__main__":

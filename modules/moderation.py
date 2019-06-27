@@ -67,7 +67,7 @@ class moderation(commands.Cog):
         await ctx.guild.ban(user, reason=f"[SOFTBAN] {user.id} for {reason}")
         await ctx.guild.unban(user, reason=f"[SOFTBAN UNBAN]")
 
-        await ctx.send(f"Softbanned {user} for {reason}")
+        await ctx.check()
 
     @commands.has_permissions(ban_members=True)
     @commands.command(
@@ -80,7 +80,7 @@ class moderation(commands.Cog):
         await ctx.guild.ban(
             discord.Object(id=user), reason=f"[BAN] {user} for {reason}"
         )
-        await ctx.send(f"Banned {user} for {reason}")
+        await ctx.check()
 
     @commands.has_permissions(kick_members=True)
     @commands.command(
@@ -91,7 +91,7 @@ class moderation(commands.Cog):
             reason = "No reason"
 
         await ctx.guild.kick(user, reason=f"[KICK] {user.id} for {reason}")
-        await ctx.send(f"Kicked {user} for {reason}")
+        await ctx.check()
 
     @commands.command()
     @commands.has_permissions(administrator=True)
@@ -114,7 +114,7 @@ class moderation(commands.Cog):
                     prefix,
                 )
             self.bot.prefixes[ctx.guild.id] = prefix
-            await ctx.send(f"Set guild prefix to `{prefix}`.")
+            await ctx.check()
         except Exception as e:
             await ctx.send(e)
 
@@ -178,7 +178,7 @@ class moderation(commands.Cog):
     async def welcome_toggle(self, ctx):
         if await self.bot.redis.sismember("welcomer_guilds", ctx.guild.id):
             await self.bot.redis.srem("welcomer_guilds", ctx.guild.id)
-            return await ctx.send("Disabled welcomer.")
+            return await ctx.check()
 
         await ctx.caution("Welcomer was not on...")
 
@@ -187,7 +187,7 @@ class moderation(commands.Cog):
     async def leave_toggle(self, ctx):
         if await self.bot.redis.sismember("leaver_guilds", ctx.guild.id):
             await self.bot.redis.srem("leaver_guilds", ctx.guild.id)
-            return await ctx.send("Disabled leaver.")
+            return await ctx.check()
 
         await ctx.caution("Leaver was not on...")
 

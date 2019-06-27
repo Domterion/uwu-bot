@@ -18,7 +18,7 @@ class create(commands.Cog):
         if await self.bot.pool.fetchrow(
             "SELECT user_id FROM user_settings WHERE user_id = $1", ctx.author.id
         ):
-            return await ctx.send(
+            return await ctx.caution(
                 "You already have an uwulonian created.", delete_after=30
             )
 
@@ -35,7 +35,7 @@ class create(commands.Cog):
 
         if len(name.content) > 60 or len(name.content) < 3:
             await name_set.delete()
-            return await ctx.send(
+            return await ctx.caution(
                 "Invalid name. Names can't be longer then 60 chars or less than 3 chars.",
                 delete_after=30,
             )
@@ -75,7 +75,7 @@ class create(commands.Cog):
     )
     async def rename(self, ctx, *, name):
         if len(name) > 60 or len(name) < 3:
-            return await ctx.send(
+            return await ctx.caution(
                 "Invalid name. Names can't be longer then 60 chars or less than 3 chars.",
                 delete_after=30,
             )
@@ -91,7 +91,7 @@ class create(commands.Cog):
                 ctx.author.id,
             )
         except asyncpg.UniqueViolationError:
-            return await ctx.send(
+            return await ctx.caution(
                 f"That name is already used. Please try again with a different name."
             )
         await ctx.send(
@@ -143,13 +143,13 @@ class create(commands.Cog):
                 await self.bot.redis.srem("uwulonians", ctx.author.id)
                 await delete_con.delete()
                 await del_msg.delete()
-                return await ctx.send("Deleted uwulonian :(")
+                return await ctx.check()
             if delete_cons.content.lower() == "no":
                 await delete_con.delete()
-                return await ctx.send("Not deleting uwulonian.")
+                return await ctx.caution("Not deleting uwulonian.")
             else:
                 await delete_con.delete()
-                return await ctx.send("Invalid choice.")
+                return await ctx.caution("Invalid choice.")
 
 
 def setup(bot):

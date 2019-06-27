@@ -93,9 +93,11 @@ class misc(commands.Cog):
     )
     async def avatar(self, ctx, *, user: discord.Member = None):
         user = user or ctx.author
-        embed = discord.Embed(colour=0x7289DA, description=f"[Link]({user.avatar_url})")
-        embed.set_author(name=f"{user.name}'s avatar", url=user.avatar_url)
-        embed.set_image(url=user.avatar_url_as(static_format="png"))
+        embed = discord.Embed(
+            colour=0x7289DA, description=f"[Link]({str(user.avatar_url)})"
+        )
+        embed.set_author(name=f"{user.name}'s avatar", url=str(user.avatar_url))
+        embed.set_image(url=str(user.avatar_url_as(static_format="png")))
         await ctx.send(embed=embed)
 
     @commands.command(

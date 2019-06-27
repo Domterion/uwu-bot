@@ -27,31 +27,10 @@ class votes(commands.Cog):
             "No subcommand passed or invalid was passed. Valid subcommands reward, cat"
         )
 
-    @errorhandler.on_cooldown()
-    @errorhandler.has_uwulonian()
-    @vote.command(description="Vote reward")
-    async def reward(self, ctx):
-        ttl = await ctx.bot.redis.pttl(f"{ctx.author.id}-vote") / 1000
-        await self.bot.redis.execute(
-            "SET",
-            f"{ctx.author.id}-{ctx.command.qualified_name}",
-            "cooldown",
-            "EX",
-            int(ttl),
-        )
-        await self.bot.pool.execute(
-            "UPDATE user_stats SET uwus = user_stats.uwus + 1000, xp = user_stats.xp + 500 WHERE user_id = $1",
-            ctx.author.id,
-        )
-        await ctx.send("Thanks for voting. You received 1000 uwus and 500 xp!")
-
-    @errorhandler.on_cooldown()
+    @errorhandler.on_cooldown(5)
     @errorhandler.has_uwulonian()
     @vote.command(description="Cat pictures")
     async def cat(self, ctx):
-        await self.bot.redis.execute(
-            "SET", f"{ctx.author.id}-{ctx.command.qualified_name}", "cooldown", "EX", 5
-        )
         headers = {"x-api-key": self.bot.config.cat_api_token}
         e = discord.Embed(color=0x7289DA)
         e.set_footer(text="Powered by https://thecatapi.com/")
